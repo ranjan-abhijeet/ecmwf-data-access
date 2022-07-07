@@ -1,6 +1,20 @@
+"""
+Libraries to install:
+1. cdsapi -- conda install -c conda-forge cdsapi
+2. xarray -- conda install -c anaconda xarray
+
+Getting the API and adding it to path (Windows OS):
+    -- https://www.ecmwf.int/en/computing/software/ecmwf-web-api
+    -- https://confluence.ecmwf.int/display/CKB/How+to+install+and+use+CDS+API+on+Windows
+
+"""
 import cdsapi
 import xarray as xr
 c = cdsapi.Client()
+
+# Day for which we want to download data. It usually takes 5-6 days
+# for ECMWF to upload data. Hence, keep the date atleast 5 days earlier than
+# current date.
 
 year = 2022
 month = 7
@@ -32,18 +46,24 @@ c.retrieve(
             '18:00', '19:00', '20:00',
             '21:00','22:00', '23:00'
         ],
+        # area: it is the bounding box which for which we want to download data.
+        # here it is set as latitiude_top, longitude_left, latitude_bottom, longitude_right
         'area': [
-            38, 79, 68,
-            98,
+            38, 68, 8, 98
         ],
     },
+    # 'india.grib' is the file in which data is downloaded.
     'india.grib')
 
-
+# xarray used to open .grib files
 ds = xr.open_dataset('india.grib')
 
+# this loop will print the variables or columns available in data along with their units.
 for v in ds:
     print("{}, {}, {}".format(v, ds[v].attrs["long_name"], ds[v].attrs["units"]))
-    
+
+# converts the xarray to dataframe
 df= ds.to_dataframe()
+
+# converts the dataframe to .csv
 df.to_csv('india.csv')
