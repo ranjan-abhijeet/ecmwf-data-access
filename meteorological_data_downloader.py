@@ -20,18 +20,14 @@ def met_data_downloader(year, month, day, data_download_path):
 
     c = cdsapi.Client()
     c.retrieve(
-        'reanalysis-era5-pressure-levels',
+        'reanalysis-era5-single-levels',
         {
             'product_type': 'reanalysis',
             'format': 'grib',
             'pressure_level': '1000',
             'variable': [
-                'divergence', 'fraction_of_cloud_cover', 'geopotential',
-                'ozone_mass_mixing_ratio', 'potential_vorticity', 'relative_humidity',
-                'specific_cloud_ice_water_content', 'specific_cloud_liquid_water_content', 'specific_humidity',
-                'specific_rain_water_content', 'specific_snow_water_content', 'temperature',
-                'u_component_of_wind', 'v_component_of_wind', 'vertical_velocity',
-                'vorticity', 'boundary_layer_height'
+                '10m_u_component_of_wind', '10m_v_component_of_wind', 
+                '2m_temperature', 'boundary_layer_height',
             ],
             'year': year,
             'month': month,
@@ -63,7 +59,7 @@ def met_data_downloader(year, month, day, data_download_path):
         print("{}, {}, {}".format(v, ds[v].attrs["long_name"], ds[v].attrs["units"]))
 
     # converts the xarray to dataframe
-    df= ds.to_dataframe()
-
+    df = ds.to_dataframe()
+    
     # converts the dataframe to .csv
     df.to_csv(f'{data_download_path}/{year}_{month}_{day}.csv')
